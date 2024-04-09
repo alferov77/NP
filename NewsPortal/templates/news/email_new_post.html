@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новая публикация!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .post-title {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .post-link {
+            color: #006621;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Новая публикация в категории, на которую вы подписаны!</h1>
+        <p>Приветствуем вас!</p>
+        <p>Мы рады сообщить вам, что на сайте появилась новая публикация, которая может быть вам интересна:</p>
+        <h2 class="post-title">{{ post.title }}</h2>
+        <p>{{ post.text|slice:":500" }}...</p>
+        <p>Чтобы прочитать полностью, перейдите по <a href="{{ post.get_absolute_url }}" class="post-link">ссылке</a>.</p>
+        <p>Спасибо, что вы с нами!</p>
+        <p>С наилучшими пожеланиями,<br>Команда сайта</p>
+    </div>
+</body>
+</html>
