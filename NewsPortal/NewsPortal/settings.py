@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,6 +53,8 @@ INSTALLED_APPS = [
     'django_filters',
     "django_apscheduler",
     'news.apps.NewsConfig',
+    'django_celery_beat',
+    'django_celery_results',
 ]
 
 SITE_ID = 1
@@ -166,3 +170,18 @@ SERVER_EMAIL = "oterosoy@yandex.ru"
 ADMINS = (
     ('admin', 'oterosoy@yandex.ru'),
 )
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# At the bottom of your settings.py file
+
+CELERY_BEAT_SCHEDULE = {
+    'send-weekly-newsletter': {
+        'task': 'news.tasks.send_weekly_newsletter',
+        'schedule': crontab(hour=8, minute=0, day_of_week='monday'),
+    },
+}
