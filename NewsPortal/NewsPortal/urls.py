@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.decorators.cache import cache_page
 
 from news.views import (
     NewsListView, NewsDetailView, search_news, PostCreateView, PostUpdateView, PostDeleteView,
@@ -25,8 +26,8 @@ from news.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('news/', NewsListView.as_view(), name='news_list'),
-    path('news/<int:pk>/', NewsDetailView.as_view(), name='news_detail'),
+    path('news/', cache_page(60 * 1)(NewsListView.as_view()), name='news_list'), # Кэширование на 1 минуту для главной страницы
+    path('news/<int:pk>/', cache_page(60 * 5)(NewsDetailView.as_view()), name='news_detail'), # Кэширование на 5 минут для страницы деталей новости
     path('news/search/', search_news, name='search_news'),
     path('news/create/', PostCreateView.as_view(), name='post_create_news'),
     path('news/<int:pk>/edit/', PostUpdateView.as_view(), name='post_edit'),

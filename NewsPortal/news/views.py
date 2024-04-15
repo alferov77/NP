@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
 from django.views.decorators.csrf import csrf_protect
 from .models import Subscriber, Category
+from django.core.cache import cache
 
 
 
@@ -35,6 +36,16 @@ class NewsDetailView(DetailView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='NW')
+
+    def get_object(self, queryset=None):
+        cache_key = f'post_{self.kwargs["pk"]}'
+        post = cache.get(cache_key)
+
+        if not post:
+            post = super().get_object(queryset=queryset)
+            cache.set(cache_key, post, 60 * 60 * 24)  # Кэшируем на 24 часа
+
+        return post
 
 
 class PostCreateView(PermissionRequiredMixin, CreateView):
