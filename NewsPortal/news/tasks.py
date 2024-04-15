@@ -3,20 +3,18 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
-from .models import Subscriber, Post
+from django.apps import apps
 from django.conf import settings
-
 
 @shared_task
 def send_new_post_notification(post_id):
+    Post = apps.get_model('news', 'Post')
+    Subscriber = apps.get_model('news', 'Subscriber')
     post = Post.objects.get(id=post_id)
     subscribers = Subscriber.objects.filter(category__in=post.categories.all())
 
     subject = f'New post: {post.title}'
-    context = {
-        'post': post,
-    }
+    context = {'post': post}
     html_content = render_to_string('news/email_new_post.html', context)
     text_content = strip_tags(html_content)
 
@@ -30,9 +28,10 @@ def send_new_post_notification(post_id):
         email.attach_alternative(html_content, "text/html")
         email.send()
 
-
 @shared_task
 def send_weekly_newsletter():
+    Post = apps.get_model('news', 'Post')
+    Subscriber = apps.get_model('news', 'Subscriber')
     one_week_ago = timezone.now() - timezone.timedelta(weeks=1)
     subscribers = Subscriber.objects.all()
 

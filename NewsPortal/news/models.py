@@ -2,9 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .tasks import send_new_post_notification
+
+from django.core.cache import cache
 
 
 class Author(models.Model):
@@ -94,4 +96,13 @@ class Subscriber(models.Model):
 @receiver(post_save, sender=Post)
 def notify_subscribers(sender, instance, created, **kwargs):
     if created:
+        from .tasks import send_new_post_notification
         send_new_post_notification.delay(instance.id)
+
+@receiver(post_save, sender=Post)
+def clear_cache(sender, instance, **kwargs):
+    cache.delete(f'post_{instance.pk}')
+
+@receiver(post_delete, sender=Post)
+def clear_cache_delete(sender, instance, **kwargs):
+    cache.delete(f'post_{instance.pk}')
