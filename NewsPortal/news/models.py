@@ -9,6 +9,7 @@ from .tasks import send_new_post_notification
 from django.core.cache import cache
 
 
+
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
@@ -92,6 +93,8 @@ class Subscriber(models.Model):
         on_delete=models.CASCADE,
         related_name='subscriptions',
     )
+
+
 
 @receiver(post_save, sender=Post)
 def notify_subscribers(sender, instance, created, **kwargs):
