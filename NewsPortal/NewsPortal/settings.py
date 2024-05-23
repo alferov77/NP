@@ -211,7 +211,7 @@ LOGGING = {
             'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s',
         },
         'console_error': {
-            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s',
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s %(exc_info)s',
         },
         'file': {
             'format': '%(asctime)s %(levelname)s %(module)s %(message)s',
@@ -221,6 +221,9 @@ LOGGING = {
         },
         'file_error': {
             'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s %(exc_info)s',
+        },
+        'mail': {
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s',
         },
     },
     'filters': {
@@ -264,7 +267,7 @@ LOGGING = {
             'formatter': 'file_error',
         },
         'file_security': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': 'security.log',
             'formatter': 'file',
@@ -273,6 +276,7 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'mail',
             'include_html': False,
         },
     },
@@ -304,7 +308,7 @@ LOGGING = {
         },
         'django.security': {
             'handlers': ['file_security'],
-            'level': 'ERROR',
+            'level': 'INFO',
             'propagate': False,
         },
     }
